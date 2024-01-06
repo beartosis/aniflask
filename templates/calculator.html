@@ -1,0 +1,166 @@
+<!-- templates/calculator.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Coat Pattern Calculator</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <form method="post" action="/">
+
+
+        <div class="table-container">
+            <table>
+                <tr>
+                    <th>Pattern</th>
+                    <th>Chance</th>
+                </tr>
+                {% for pattern, chance in pattern_chances.items() %}
+                <tr>
+                    <td>{{ pattern }}</td>
+                    <td class="chance-cell">{{ chance }}%</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+
+        <!-- Grandparents -->
+        <div class="row">
+            {% for i in range(1, 5) %}
+                <div class="grandparent">
+                    {% set grandparent_key = 'grandparent' ~ i|string %}
+                    {% if selected_patterns[grandparent_key] and selected_patterns[grandparent_key].pattern_id %}
+                        <div id="grandparent-circle{{ i }}" class="circle" style="background-image: url('{{ url_for('static', filename=selected_patterns[grandparent_key].pattern_id|lower ~ '.png') }}');"></div>
+                    {% else %}
+                        <div id="grandparent-circle{{ i }}" class="circle"></div>
+                    {% endif %}
+                    <div class="label">Grandparent {{ i }}</div>
+                    <!-- Add family_tree_percentage display here -->
+                    {% if family_tree_percentage[grandparent_key] %}
+                        <div class="percentage-label">{{ family_tree_percentage[grandparent_key] }}%</div>
+                    {% endif %}
+                    <div class="select-container">
+                        <select name="{{ grandparent_key }}" id="grandparent{{ i }}" onchange="updateBackgroundImage('grandparent{{ i }}', 'grandparent-circle{{ i }}')">
+                            {% for pattern in coat_patterns %}
+                                <option value="{{ pattern.pattern_id }}" data-pattern-name="{{ pattern.pattern_name }}" {% if selected_patterns[grandparent_key] and pattern.pattern_id == selected_patterns[grandparent_key].pattern_id %}selected{% endif %}>
+                                    ({{ pattern.rarity }}) {{ pattern.pattern_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    
+        <!-- Parents -->
+        <div class="row">
+            {% for i in range(1, 3) %}
+                <div class="parent">
+                    {% set parent_key = 'parent' ~ i|string %}
+                    {% if selected_patterns[parent_key] and selected_patterns[parent_key].pattern_id %}
+                        <div id="parent-circle{{ i }}" class="circle" style="background-image: url('{{ url_for('static', filename=selected_patterns[parent_key].pattern_id|lower ~ '.png') }}');"></div>
+                    {% else %}
+                        <div id="parent-circle{{ i }}" class="circle"></div>
+                    {% endif %}
+                    <div class="label">Parent {{ i }}</div>
+                    <!-- Add family_tree_percentage display here -->
+                    {% if family_tree_percentage[parent_key] %}
+                        <div class="percentage-label">{{ family_tree_percentage[parent_key] }}%</div>
+                    {% endif %}
+                    <div class="select-container">
+                        <select name="{{ parent_key }}" id="parent{{ i }}" onchange="updateBackgroundImage('parent{{ i }}', 'parent-circle{{ i }}')">
+                            {% for pattern in coat_patterns %}
+                                <option value="{{ pattern.pattern_id }}" data-pattern-name="{{ pattern.pattern_name }}" {% if selected_patterns[parent_key] and pattern.pattern_id == selected_patterns[parent_key].pattern_id %}selected{% endif %}>
+                                    ({{ pattern.rarity }}) {{ pattern.pattern_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    
+<!-- Child -->
+<div class="row">
+    <div class="child">
+        {% set child_key = 'child' %}
+        {% if selected_patterns[child_key] %}
+            <div id="child-circle" class="circle" style="background-image: url('{{ url_for('static', filename=selected_patterns[child_key].pattern_id|lower ~ '.png') }}');"></div>
+            <div class="label">Child</div>
+            <!-- Add the congratulatory message here, in bold -->
+            <div class="congrats-message">
+                {% set pattern_key = '(' ~ selected_patterns[child_key].rarity ~ ') ' ~ selected_patterns[child_key].pattern_name %}
+                <strong>Congrats, you had a {{ selected_patterns[child_key].pattern_name }} pup, which is {{ selected_patterns[child_key].rarity }} at {{ pattern_chances[pattern_key] }}%!</strong>
+            </div>
+        {% else %}
+            <div id="child-circle" class="circle"></div>
+            <div class="label">Child</div>
+        {% endif %}
+    </div>
+</div>
+        
+        <div class="calculate-button-container">
+            <button class="calculate-button">Calculate Patterns</button>
+        </div>
+    </form>
+    
+    <script>
+        function updateBackgroundImage(selectElementId, circleElementId) {
+            // Get the select element and the selected option's value (pattern_id)
+            var selectElement = document.getElementById(selectElementId);
+            var selectedPatternId = selectElement.value;
+    
+            // Save the selected pattern id to localStorage
+            localStorage.setItem(selectElementId, selectedPatternId);
+    
+            // Update the background image of the circle element
+            var circleElement = document.getElementById(circleElementId);
+            if (selectedPatternId) {
+                // Construct the URL for the background image
+                var imageUrl = '/static/' + encodeURIComponent(selectedPatternId) + '.png';
+                circleElement.style.backgroundImage = 'url("' + imageUrl + '")';
+            } else {
+                // If no pattern is selected, remove the background image
+                circleElement.style.backgroundImage = '';
+            }
+        }
+    
+        window.onload = function() {
+            {% for i in range(1, 5) %}
+                var grandparentDropdownId = 'grandparent{{ i }}';
+                var grandparentCircleId = 'grandparent-circle{{ i }}';
+                var grandparentDropdown = document.getElementById(grandparentDropdownId);
+                var grandparentCircle = document.getElementById(grandparentCircleId);
+    
+                // Retrieve the selected pattern id from localStorage
+                var savedPatternId = localStorage.getItem(grandparentDropdownId);
+                if (savedPatternId) {
+                    grandparentDropdown.value = savedPatternId;
+                }
+    
+                if (grandparentDropdown) {
+                    updateBackgroundImage(grandparentDropdownId, grandparentCircleId);
+                }
+            {% endfor %}
+    
+            {% for i in range(1, 3) %}
+                var parentDropdownId = 'parent{{ i }}';
+                var parentCircleId = 'parent-circle{{ i }}';
+                var parentDropdown = document.getElementById(parentDropdownId);
+                var parentCircle = document.getElementById(parentCircleId);
+    
+                // Retrieve the selected pattern id from localStorage
+                var savedPatternId = localStorage.getItem(parentDropdownId);
+                if (savedPatternId) {
+                    parentDropdown.value = savedPatternId;
+                }
+    
+                if (parentDropdown) {
+                    updateBackgroundImage(parentDropdownId, parentCircleId);
+                }
+            {% endfor %}
+        };
+    </script>
+</body>
+</html>

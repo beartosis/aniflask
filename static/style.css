@@ -1,0 +1,106 @@
+/* static/style.css */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    position: relative;
+    background-color: #9f9f9f; /* light gray */
+}
+
+.family-tree,
+.row,
+.select-container {
+    display: flex;
+    justify-content: center; /* This will center the children horizontally */
+    align-items: center; /* This will center the children vertically if needed */
+    /* ... other styles ... */
+}
+
+.calculate-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%; /* Take the full width to center the button within */
+    margin-top: 20px; /* Optional: adds some space above the button */
+    background-color: #006400; /* Dark green background */
+    color: white; /* White text */
+    font-weight: bold; /* Bold text */
+    padding: 10px 20px; /* Add padding for better spacing */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Optional: adds rounded corners to the button */
+    cursor: pointer; /* Changes the cursor to a pointer when hovering over the button */
+    outline: none; /* Removes the outline to keep the styling clean */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.calculate-button:hover {
+    background-color: #004d00; /* Slightly darker green on hover for a subtle effect */
+}
+
+
+.grandparent,
+.parent,
+.child {
+    position: relative;
+    margin: 10px;
+    text-align: center;
+    /* If you want to center these elements as well, you can make them flex containers */
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    flex-direction: column; /* Stack children vertically */
+    align-items: center; /* Center vertically */
+}
+
+.circle {
+    width: 200px;
+    height: 200px;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    margin: 0 10px;
+}
+
+.label {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.select-container {
+    display: flex;
+    justify-content: center;
+}
+
+
+table {
+    width: 100%; /* Adjust table width as needed */
+    border-collapse: collapse; /* Removes the space between borders */
+}
+
+table th,
+table td {
+    padding: 8px; /* Adjust padding as needed */
+    text-align: left; /* Aligns text to the left of the cell */
+}
+
+/* Target only the chance value cells */
+/* table td.chance-cell {
+    border-top: 3px solid black;
+    border-left: 3px solid black;
+    border-bottom: 3px solid black;
+    border-right: 3px solid black;
+} */
+
+/* Added container class for the table with absolute positioning */
+.table-container {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    border: 1px solid black; /* Black border */
+    background-color: white; /* White background */
+}
